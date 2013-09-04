@@ -1,0 +1,365 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to Count Objects documentation! &mdash; Count Objects 22/08/2013 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '22/08/2013',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Count Objects 22/08/2013 documentation" href="#" />
+    <link rel="next" title="Welcome to Count Objects documentation!" href="" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="#" title="Welcome to Count Objects documentation!"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">Count Objects 22/08/2013 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="welcome-to-count-objects-documentation">
+<h1>Welcome to Count Objects documentation!<a class="headerlink" href="#welcome-to-count-objects-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Welcome to Count Objects documentation!</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#img-proc-module">img_proc module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contour-features">Contour Features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</div>
+<span class="target" id="module-im_proc"></span><div class="section" id="img-proc-module">
+<h2>img_proc module<a class="headerlink" href="#img-proc-module" title="Permalink to this headline">¶</a></h2>
+<p>The im_proc module has utility function that can be used to prepare an image
+for processing and analysis. The module relies on openCV (cv2). Many of the functions are simply extensions
+of openCV functions make easier to implement by reducing them to simple singular functions.
+Created by Seth Reid August 2013.</p>
+<dl class="function">
+<dt id="im_proc.close_image">
+<tt class="descclassname">im_proc.</tt><tt class="descname">close_image</tt><big>(</big><em>img</em>, <em>element</em>, <em>iterations</em><big>)</big><a class="reference internal" href="_modules/im_proc.html#close_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#im_proc.close_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a morphological close operation (dilate followed by erode) to the image supllied and by the iterations specified.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>img (image): The image to be operated on
+element (element): a morphological element by which to do the operation
+iterations (int): the number of iterations of the close operation</dd>
+<dt>Returns:</dt>
+<dd>the closed image</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="im_proc.findThreshValue">
+<tt class="descclassname">im_proc.</tt><tt class="descname">findThreshValue</tt><big>(</big><em>img</em><big>)</big><a class="reference internal" href="_modules/im_proc.html#findThreshValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#im_proc.findThreshValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find an appropriate threshold value in an image with a distict background and foreground gray-scale intensity contrast. This function should be used on an image that has already been converted to gray scale. The function works by gathering the histrogram data of the image and working backwards through the numpy array to find the first none zero values. It then continues until it finds a zero value. This is consideredto be the point at which the darker parts of the image end and is considered the threshold value.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>img (image): the image to be operated on</dd>
+<dt>Returns:</dt>
+<dd>An integer threshold value</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="im_proc.open_image">
+<tt class="descclassname">im_proc.</tt><tt class="descname">open_image</tt><big>(</big><em>img</em>, <em>element</em>, <em>iterations</em><big>)</big><a class="reference internal" href="_modules/im_proc.html#open_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#im_proc.open_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a morphological open operation (erode followed by dilate) to the image supllied and by the iterations specified.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>img (image): The image to be operated on
+element (element): a morphological element by which to do the operation
+iterations (int): the number of iterations of the open operation</dd>
+<dt>Returns:</dt>
+<dd>the opned image</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="im_proc.show_image">
+<tt class="descclassname">im_proc.</tt><tt class="descname">show_image</tt><big>(</big><em>windowName</em>, <em>img</em><big>)</big><a class="reference internal" href="_modules/im_proc.html#show_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#im_proc.show_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Diplay an image in an openCV named window.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>windowName (str): The name of the window to use
+img (image): The image to be shown</dd>
+<dt>Returns:</dt>
+<dd>none</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="im_proc.singleChannelHist">
+<tt class="descclassname">im_proc.</tt><tt class="descname">singleChannelHist</tt><big>(</big><em>img</em><big>)</big><a class="reference internal" href="_modules/im_proc.html#singleChannelHist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#im_proc.singleChannelHist" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates single channel intensity histogram from the image supplied</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>img (image): The image to be operated on.</dd>
+<dt>Returns:</dt>
+<dd>a numpy array with the histogram data contained</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="im_proc.threshold_image">
+<tt class="descclassname">im_proc.</tt><tt class="descname">threshold_image</tt><big>(</big><em>img</em>, <em>thresholdValue</em><big>)</big><a class="reference internal" href="_modules/im_proc.html#threshold_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#im_proc.threshold_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a threshold eperation on a supplied image with the thresholdValue specified.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>img (image): The image to be operated on
+thresholdValue: a value between 0 and 255 around which the image will be thresholed. Any values bellow the given value will be black while those above will become white in the output</dd>
+<dt>Returns:</dt>
+<dd>A binary image based on the threshold value supplied</dd>
+</dl>
+</dd></dl>
+
+</div>
+<span class="target" id="module-contour_features"></span><div class="section" id="contour-features">
+<h2>Contour Features<a class="headerlink" href="#contour-features" title="Permalink to this headline">¶</a></h2>
+<p>This module contains the Contour Class used to calculate the statistics of objects found using cv2.findContours()</p>
+<dl class="class">
+<dt id="contour_features.Contour">
+<em class="property">class </em><tt class="descclassname">contour_features.</tt><tt class="descname">Contour</tt><big>(</big><em>img</em>, <em>cnt</em><big>)</big><a class="reference internal" href="_modules/contour_features.html#Contour"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contour_features.Contour" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contour class used to create and store statists about the obejcts found in an image using cv2.findContours function. The attributes are not calculated on instantiation but are popluated when the corresponding function is called on the contour.</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd><dl class="first last docutils">
+<dt>img (image):</dt>
+<dd>The image that the contour was found in</dd>
+<dt>cnt (openCV moment):</dt>
+<dd>The detected contour points from the original image</dd>
+<dt>size (int):</dt>
+<dd>The number of different points in the contour boundry that defines the contour itself</dd>
+<dt>area (double):</dt>
+<dd>Total area of the contour in pixels</dd>
+<dt>centroid (array):</dt>
+<dd>X and y value of the center of the contour. Calculated as the average position of all of the pixels contained inside the contour</dd>
+<dt>boundingBox (array):</dt>
+<dd>The four x,y values of the corners of the minimal bounding box around the contour.</dd>
+<dt>boundingEllipse (array):</dt>
+<dd>The points that make up the best fitting bounding ecplise of the contour.</dd>
+<dt>majorAxis (double):</dt>
+<dd>The length of the major axis of the bounding ellipse in pixels</dd>
+<dt>minorAxis (double):</dt>
+<dd>The lenth of the minor axis of the bounding ellipse in pixels</dd>
+<dt>height: (double):</dt>
+<dd>The length (longest side) of the bounding box which can be considered a proxy for length</dd>
+<dt>width: (double):</dt>
+<dd>The width (longest side) of the bounding box which can be considered a proxy for width</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="contour_features.Contour.getArea">
+<tt class="descname">getArea</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/contour_features.html#Contour.getArea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contour_features.Contour.getArea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the area of the contour in pixels</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>none</dd>
+<dt>Returns:</dt>
+<dd>The area in pixels</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="contour_features.Contour.getBoundingBox">
+<tt class="descname">getBoundingBox</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/contour_features.html#Contour.getBoundingBox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contour_features.Contour.getBoundingBox" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the minimal bounding box for the countour
+Args:</p>
+<blockquote>
+<div>None</div></blockquote>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>An array containing the x,y values of the four corners of the bounding box</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="contour_features.Contour.getBoundingBoxDimensions">
+<tt class="descname">getBoundingBoxDimensions</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/contour_features.html#Contour.getBoundingBoxDimensions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contour_features.Contour.getBoundingBoxDimensions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the length and width of the bounding box of the contour. This can be used as  proxy for the length and width of the contour itself</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None</dd>
+<dt>Returns:</dt>
+<dd>An array containing the width and the height in that order [width,height]</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="contour_features.Contour.getBoundingEllipse">
+<tt class="descname">getBoundingEllipse</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/contour_features.html#Contour.getBoundingEllipse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contour_features.Contour.getBoundingEllipse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the smallest bounding ellipse for the contour</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None</dd>
+<dt>Returns:</dt>
+<dd>An array of the points in the bounding ellipse</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="contour_features.Contour.getCentroid">
+<tt class="descname">getCentroid</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/contour_features.html#Contour.getCentroid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contour_features.Contour.getCentroid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args:</p>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="contour_features.Contour.getCircularity">
+<tt class="descname">getCircularity</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/contour_features.html#Contour.getCircularity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contour_features.Contour.getCircularity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the circularity of the the contour using the Haywood Circularity Factor formula. The function returns the inverse of the result of the Haywoord formula</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None</dd>
+<dt>Returns:</dt>
+<dd>A double that represents the circularity of the contour with a value between 0 and 1 where a value of 1 represents a perfect circle.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="contour_features.Contour.getContourLength">
+<tt class="descname">getContourLength</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/contour_features.html#Contour.getContourLength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contour_features.Contour.getContourLength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the length of the perimiter of the contour in pixels</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None</dd>
+<dt>Returns:</dt>
+<dd>The length of the perimeter of the contour in pixel</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="contour_features.Contour.getMajorAxis">
+<tt class="descname">getMajorAxis</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/contour_features.html#Contour.getMajorAxis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contour_features.Contour.getMajorAxis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the major axis of the bounding ellipse of the contour</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None</dd>
+<dt>Returns:</dt>
+<dd>A double representing the length in pixels of the major axis</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="contour_features.Contour.getMinorAxis">
+<tt class="descname">getMinorAxis</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/contour_features.html#Contour.getMinorAxis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#contour_features.Contour.getMinorAxis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the minor axis of the bounding ellipse of the contour</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None</dd>
+<dt>Returns:</dt>
+<dd>A double representing the length in pixels of the minor axis</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to Count Objects documentation!</a><ul>
+<li><a class="reference internal" href="#img-proc-module">img_proc module</a></li>
+<li><a class="reference internal" href="#contour-features">Contour Features</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href=""
+                        title="next chapter">Welcome to Count Objects documentation!</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="#" title="Welcome to Count Objects documentation!"
+             >next</a> |</li>
+        <li><a href="#">Count Objects 22/08/2013 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Seth Reid.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
