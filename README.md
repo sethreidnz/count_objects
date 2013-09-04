@@ -6,7 +6,7 @@ Warning: This is very much in a development stage V: 0.0.1
 
 This is a framework that can be used to design futher applications with the purpose
 of counting objects of interest in a high contrast background to foreground context.
-If lighting conditions are correct (even backlit image with white background the
+If lighting conditions are correct (even backlit image with white background) the
 functions in this tool box should be able to acurately count and measure statistics 
 of the objects. The package uses OpenCV and python (cv2 bindings).
 
