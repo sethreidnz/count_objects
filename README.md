@@ -18,6 +18,13 @@ Smallest bounding rectangle
 Width and Height (px)
 Total number of objects in the image
 
+Included is a script contour_class.py which I used to make my contour_features.py and Contour class. This is a script made by abidrahmank
+on GitHub and all his code can be found here: 
+
+ https://github.com/abidrahmank/
+
+He is responsible for the bulk of this work and many thanks to him.
+
 ============
 Install
 ============
