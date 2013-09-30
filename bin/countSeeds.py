@@ -1,7 +1,6 @@
 import cv2
 import sys
 import numpy as np
-from Tkinter import *
 from count_objects import im_proc
 from count_objects import contour_features as cf
 
