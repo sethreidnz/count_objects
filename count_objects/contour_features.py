@@ -8,9 +8,13 @@ import cv2
 import numpy as np
 import collections
 import math
+from count_objects import im_proc
 
 class Contour:
-        '''Contour class used to create and store statists about the obejcts found in an image using cv2.findContours function. The attributes are not calculated on instantiation but are popluated when the corresponding function is called on the contour.
+        '''Contour class used to create and store statists about the obejcts found in an image using cv2.findContours function.
+        The attributes can be calcuted on instantiation of the contour object or they can be called and populated as the GET function
+        for that attribute is called. This is done by means of an optional boolean parameter initValues. This means each GET function
+        first determines if the value has been changed from default value of None before doing any calculation.
 
         Attributes:
                 img (image):
@@ -23,7 +27,9 @@ class Contour:
                         Total area of the contour in pixels
                 centroid (array):
                         X and y value of the center of the contour. Calculated as the average position of all of the pixels contained inside the contour
-                boundingBox (array):
+		boundingBox (array):
+                        The four x,y values of the corners of the bounding box around the contour that has sides perpendicular to the image x,y axis.
+                minBoundingBox_Points (array):
                         The four x,y values of the corners of the minimal bounding box around the contour.
                 boundingEllipse (array):
                         The points that make up the best fitting bounding ecplise of the contour.
@@ -34,14 +40,27 @@ class Contour:
                 height: (double):
                         The length (longest side) of the bounding box which can be considered a proxy for length
                 width: (double):
-                        The width (longest side) of the bounding box which can be considered a proxy for width               
+                        The width (longest side) of the bounding box which can be considered a proxy for width
+                ellipse (array):
+                        An array of hte points in the smallest bounding ellipse
+                ellipse_MinorAxisLength: (double):
+                        The length of the minor axis of the bounding ellipse in pixels            
+                ellipse_MajorAxisLength: (double):
+                        The length of the major axis of the bounding ellipse in pixels
+                contourLengthToWidth: (double):
+                        The ratio of the contours length to width (calculated from the minBoundingBoxDims)               
+                allPixelPoints: (array):
+                        Two arrays one with the x and one with the y coordinates of every pixel inside the contour.                    
+                allPixelPointColours: (array):
+                        Two arrays one with the an array containing the x,y coordinates and the other an array containing the BGR values [Coordinates, Colours]
         '''
-        def __init__(self,img,cnt):
+        def __init__(self,img,cnt,initValues=False):
                 '''The constructor for a contour object
 
                 Args:
                     img (image): The image that the contour moments were detected from
                     cnt (moment): An openCV contour moment structure that is returned using cv2.findContours()
+                    initValues (boolean): True == calculate the attributes upon initialisation. False == set all non supplied attribues to None as default.
 
                 Returns:
                     None
@@ -50,7 +69,46 @@ class Contour:
                 self.img = img
                 self.cnt = cnt
                 self.size = len(cnt)
-
+                if (initValues):
+                        self.initValuesToNone()
+                        self.getArea()
+                        self.getCentroid()
+                        self.getBoundingBox()
+                        self.getMinBoundingBox()
+                        self.getBoundingEllipse()
+                        self.getMajorAxis()
+                        self.getMinorAxis()
+                        self.getMinBoundingBoxDimensions()
+                        self.getContourLength()
+                        self.getCircularity()
+                        self.getContourLengthToWidth()
+                        self.getPixelPoints(self.img)
+                        self.getPixelPointColours(self.img)
+                        
+                else:
+                        self.initValuesToNone()
+                        
+        def initValuesToNone(self):
+                self.area = None
+                self.centroid = None
+                self.circularity = None
+                self.boundingBox_Points = None
+                self.minBoundingBox_Points = None
+                self.boundingEllipse = None
+                self.boundingAxis = None
+                self.boundingElliplse = None
+                self.majorAxis = None
+                self.minorAxis = None
+                self.height = None
+                self.width = None
+                self.contourLength = None
+                self.ellipse = None
+                self.ellipse_MinorAxisLength = None
+                self.ellipse_MajorAxisLength = None
+                self.contourLengthToWidth = None
+                self.allPixelPoints = None
+                self.allPixelPointColours = None
+        
         #get contour area
         def getArea(self):
                 '''Finds the area of the contour in pixels
@@ -61,8 +119,8 @@ class Contour:
                 Returns:
                      The area in pixels
                 '''
-                self.area = cv2.contourArea(self.cnt)
-
+                if (self.area is None):
+                        self.area = cv2.contourArea(self.cnt)
                 return self.area
             
 
@@ -75,17 +133,29 @@ class Contour:
 
                 Returns:
                       
-                '''    
-                self.moments = cv2.moments(self.cnt)
-                if self.moments['m00'] != 0.0:       
-                        self.cx = self.moments['m10']/self.moments['m00']
-                        self.cy = self.moments['m01']/self.moments['m00']
-                        self.centroid = (int(round(self.cx,0)),int(round(self.cy)))
-                        return self.centroid            
-                else:
-                        return "Region has zero area"
+                '''
+                if (self.centroid is None):
+                        self.moments = cv2.moments(self.cnt)
+                        if self.moments['m00'] != 0.0:       
+                                self.cx = self.moments['m10']/self.moments['m00']
+                                self.cy = self.moments['m01']/self.moments['m00']
+                                self.centroid = (int(round(self.cx,0)),int(round(self.cy)))                                         
+                        else:
+                                return "Region has zero area"
+                return self.centroid 
+	def getBoundingBox(self):
+                '''Get a bounding box that has sides that are perperdicular to the image x and y axis.
+		Args:
+                	none
+		Returns:
+			An array containing the x,y values of the four corners of the bounding box
+		'''
+                if (self.boundingBox_Points is None):
+                        bx,by,bw,bh = cv2.boundingRect(self.cnt)
+                        self.boundingBox_points = bx,by,bw,bh
+                return self.boundingBox_Points
 
-        def getBoundingBox(self):
+        def getMinBoundingBox(self):
                 '''Get the minimal bounding box for the countour
                 Args:
                    None
@@ -93,19 +163,16 @@ class Contour:
                 Returns:
                    An array containing the x,y values of the four corners of the bounding box
                 '''
-                rect = cv2.minAreaRect(self.cnt)
-                
-                points = cv2.cv.BoxPoints(rect)
-                points = np.int0(np.around(points))
-                
-
-                self.boundingBox_points = points
-                self.boundingBox_top = points[0]
-                self.boundingBox_right = points[1]
-                self.boundingBox_bottom = points[2]
-                self.boundingBox_right = points[3]
-                
-                return self.boundingBox_points
+                if (self.minBoundingBox_Points is None):                        
+                        rect = cv2.minAreaRect(self.cnt)              
+                        points = cv2.cv.BoxPoints(rect)
+                        points = np.int0(np.around(points))
+                        self.minBoundingBox_Points = points
+                        self.minBoundingBox_top = points[0]
+                        self.minBoundingBox_right = points[1]
+                        self.minBoundingBox_bottom = points[2]
+                        self.minBoundingBox_right = points[3]                
+                return self.minBoundingBox_Points
 
         def getBoundingEllipse(self):
                 '''Get the smallest bounding ellipse for the contour
@@ -115,9 +182,10 @@ class Contour:
 
                 Returns:
                     An array of the points in the bounding ellipse
-                ''' 
-                self.ellipse = cv2.fitEllipse(self.cnt)
-                (self.ellipose_center,self.ellipse_axes,self.ellipse_orientation) = self.ellipse
+                '''
+                if (self.ellipse is None):
+                        self.ellipse = cv2.fitEllipse(self.cnt)
+                        (self.ellipose_center,self.ellipse_axes,self.ellipse_orientation) = self.ellipse
                 return self.ellipse
         
         def getMajorAxis(self):
@@ -128,10 +196,10 @@ class Contour:
                 
                 Returns:
                     A double representing the length in pixels of the major axis
-                ''' 
-                if (self.ellipse is None):
-                        self.getBoundingEllipse()
-                
+                '''
+                if (self.ellipse_MajorAxisLength is None):
+                        if (self.ellipse is None):
+                                self.getBoundingEllipse()                
                 self.ellipse_MajorAxisLength = max(self.ellipse_axes)
                 return self.ellipse_MajorAxisLength
                 
@@ -143,14 +211,15 @@ class Contour:
                 
                 Returns:
                     A double representing the length in pixels of the minor axis
-                ''' 
-                if (self.ellipse is None):
-                        self.getBoundingEllipse()
+                '''
+                if (self.ellipse_MinorAxisLength is None):
+                        if (self.ellipse is None):
+                                self.getBoundingEllipse()
                 
-                self.ellispse_MinorAxisLength = min(self.ellipse_axes)  
-                return self.ellispse_MinorAxisLength
+                        self.ellipse_MinorAxisLength = min(self.ellipse_axes)  
+                return self.ellipse_MinorAxisLength
 
-        def getBoundingBoxDimensions(self):
+        def getMinBoundingBoxDimensions(self):
                 '''Find the length and width of the bounding box of the contour. This can be used as  proxy for the length and width of the contour itself
 
                 Args:
@@ -158,26 +227,27 @@ class Contour:
 
                 Returns:
                     An array containing the width and the height in that order [width,height]
-                ''' 
-                if (self.boundingBox_points is None):
-                        self.getBoundingBox()
+                '''
+                if (self.width is None or self.height is None):
+                        if (self.minBoundingBox_Points is None):
+                                self.getMinBoundingBox()
 
-                #for dimention 1 using the top corner and the right corner
+                        #for dimention 1 using the top corner and the right corner
                
-                a = (self.boundingBox_right[0] - self.boundingBox_top[0])            
-                b = (self.boundingBox_right[1] - self.boundingBox_top[1])
-                dimension1 = math.sqrt(a**2 + b**2)
+                        a = (self.minBoundingBox_right[0] - self.minBoundingBox_top[0])            
+                        b = (self.minBoundingBox_right[1] - self.minBoundingBox_top[1])
+                        dimension1 = math.sqrt(a**2 + b**2)
 
-                #for dimension 2 using the bottom corner and the left corner
+                        #for dimension 2 using the bottom corner and the left corner
 
-                c = (self.boundingBox_right[0] - self.boundingBox_bottom[0])
-                d = (self.boundingBox_right[1] - self.boundingBox_bottom[1])
+                        c = (self.minBoundingBox_right[0] - self.minBoundingBox_bottom[0])
+                        d = (self.minBoundingBox_right[1] - self.minBoundingBox_bottom[1])
                     
                                     
-                dimension2 = math.sqrt(c**2 + d**2)
+                        dimension2 = math.sqrt(c**2 + d**2)
 
-                self.width = round(min(dimension1,dimension2),2)
-                self.height = round(max(dimension1, dimension2),2)
+                        self.width = round(min(dimension1,dimension2),2)
+                        self.height = round(max(dimension1, dimension2),2)
                 return [self.width,self.height]
         def getContourLength(self):
                 '''Returns the length of the perimiter of the contour in pixels
@@ -187,8 +257,9 @@ class Contour:
 
                 Returns:
                     The length of the perimeter of the contour in pixel
-                ''' 
-                self.contourLength = cv2.arcLength(self.cnt,True)
+                '''
+                if (self.contourLength is None):
+                        self.contourLength = cv2.arcLength(self.cnt,True)
                 return self.contourLength
         
         def getCircularity(self):
@@ -199,13 +270,14 @@ class Contour:
 
                 Returns:
                     A double that represents the circularity of the contour with a value between 0 and 1 where a value of 1 represents a perfect circle.
-                ''' 
-                if (self.area is None):
-                        self.getArea()
-                if (self.contourLength is None):
-                        self.ContourLength()
-                               
-                self.circularity = 1/((self.contourLength/(2*math.sqrt(math.pi*self.area))))
+                '''
+               
+                if(self.circularity is None):
+                        if (self.area is None):
+                                self.getArea()
+                        if (self.contourLength is None):
+                                self.getContourLength()
+                        self.circularity = 1/((self.contourLength/(2*math.sqrt(math.pi*self.area))))
                 return self.circularity
 
         def getContourLengthToWidth(self):
@@ -217,8 +289,45 @@ class Contour:
                 Returns:
                     The ratio of length to width as a double
                 '''
-                if self.width == None or self.height == None:
-                        self.getBoundingBoxDimensions()
                 
-                self.contourLengthToWidth = self.height/self.width
+                if (self.contourLengthToWidth == None):
+                        if (self.width == None or self.height == None):
+                                self.getBoundingBoxDimensions()
+                        self.contourLengthToWidth = self.height/self.width
                 return self.contourLengthToWidth
+
+        def getPixelPoints(self, img):
+                '''Returns an array of all the pixel points in the contour
+
+                Args:
+                    img : the original image that is used as reference point for the pixel points.
+
+                Returns:
+                    An array of all the pixel points in the contour
+                '''
+                if(self.allPixelPoints is None):
+                        drawing = np.zeros(img.shape,np.uint8) #create a zero'd drawing with same dimensions as given image
+                        cv2.drawContours(drawing,[self.cnt],0,(255,255,255),-1)              
+                        pixelPoints = np.nonzero(drawing)
+                        self.allPixelPoints = pixelPoints
+		return self.allPixelPoints	
+	def getPixelPointColours(self,colourImg):
+                '''Returns an tuple of cordinates and colour arrays
+
+                Args:
+                    img : the original image that is used as reference point for the pixel points adn the colours. Pass a 1 channel grayscale or else pixel points will be
+                          returned once for each channel.
+
+                Returns:
+                    An array of all the pixel points in the contour
+                '''
+                if (self.allPixelPointColours is None):
+                        if (self.allPixelPoints is None):
+                                pixelpoints = c.getPixelPoints(colourImg)
+                        colourList = list()
+                        rows = self.allPixelPoints[0]
+                        cols = self.allPixelPoints[1]
+                        for x in range(0, len(rows)):
+                                colourList.append([[rows[x],cols[x]],colourImg[rows[x],cols[x]]])
+                        self.allPixelPointColours = colourList
+                return  self.allPixelPointColours
