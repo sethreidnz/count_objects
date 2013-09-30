@@ -69,8 +69,8 @@ class Contour:
                 self.img = img
                 self.cnt = cnt
                 self.size = len(cnt)
+                self.initValuesToNone()
                 if (initValues):
-                        self.initValuesToNone()
                         self.getArea()
                         self.getCentroid()
                         self.getBoundingBox()
@@ -84,9 +84,8 @@ class Contour:
                         self.getContourLengthToWidth()
                         self.getPixelPoints(self.img)
                         self.getPixelPointColours(self.img)
-                        
-                else:
-                        self.initValuesToNone()
+
+                       
                         
         def initValuesToNone(self):
                 self.area = None
@@ -311,12 +310,11 @@ class Contour:
                         pixelPoints = np.nonzero(drawing)
                         self.allPixelPoints = pixelPoints
 		return self.allPixelPoints	
-	def getPixelPointColours(self,colourImg):
+	def getPixelPointColours(self,img):
                 '''Returns an tuple of cordinates and colour arrays
 
                 Args:
-                    img : the original image that is used as reference point for the pixel points adn the colours. Pass a 1 channel grayscale or else pixel points will be
-                          returned once for each channel.
+                    img : the original image that is used as reference point for the pixel points and the colours.
 
                 Returns:
                     An array of all the pixel points in the contour
