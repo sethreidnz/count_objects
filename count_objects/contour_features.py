@@ -71,12 +71,15 @@ class Contour:
                 self.originalImg = originalImg
                 self.cnt = cnt
                 self.size = len(cnt)
+<<<<<<< HEAD
                 if (binaryImg is None):
                         self.binaryImg = im_proc.prepareImage(self.originalImg)
                         im_proc.show_image (self.binaryImg)
                 else:
                         self.binaryImg = binaryImg
                 
+=======
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a
                 self.initValuesToNone()
                 if (initValues):
                         self.getArea()
@@ -90,10 +93,16 @@ class Contour:
                         self.getContourLength()
                         self.getCircularity()
                         self.getContourLengthToWidth()
+<<<<<<< HEAD
                         self.getPixelPoints()
                         self.getPixelPointColours()
                         self.getTotalReflectance()
                
+=======
+                        self.getPixelPoints(self.img)
+                        self.getPixelPointColours(self.img)
+
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a
                        
                         
         def initValuesToNone(self):
@@ -320,7 +329,11 @@ class Contour:
                         pixelPoints = np.nonzero(drawing)
                         self.allPixelPoints = pixelPoints
 		return self.allPixelPoints	
+<<<<<<< HEAD
 	def getPixelPointColours(self):
+=======
+	def getPixelPointColours(self,img):
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a
                 '''Returns an tuple of cordinates and colour arrays
 
                 Args:

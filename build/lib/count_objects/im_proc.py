@@ -14,7 +14,10 @@ import cv2
 import cv
 import sys
 import numpy as np
+<<<<<<< HEAD
 import contour_features as cf
+=======
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a
 
 def show_image(windowName,img):
     '''Diplay an image in an openCV named window.
@@ -76,12 +79,20 @@ def threshold_image(img,thresholdValue):
 
     Args:
         img (image): The image to be operated on
+<<<<<<< HEAD
         thresholdValue (int Default= None): A value between 0 and 255 around which the image will be thresholed. Any values bellow the given value will be black while those above will become white in the output
     Returns:
         A binary image based on the threshold value supplied
     '''
   
      
+=======
+        thresholdValue: a value between 0 and 255 around which the image will be thresholed. Any values bellow the given value will be black while those above will become white in the output
+    Returns:
+        A binary image based on the threshold value supplied
+    '''
+    
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a
     ret, threshold_image = cv2.threshold(img,thresholdValue,255,cv2.THRESH_BINARY_INV)
     return threshold_image
 
@@ -118,6 +129,7 @@ def findThreshValue(img):
     for y in range(x, 0, -1):
         if hist[y] == 0:
             break
+<<<<<<< HEAD
     return y
 
 def prepareImage(img, threshValue = None):
@@ -160,3 +172,6 @@ def getContourListFrom(originalImage, threshValue = None, initValues = False):
             c = cf.Contour(originalImage,cnt,prepared_image,initValues)
             contourList.append(c)
     return contourList
+=======
+    return y  
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a

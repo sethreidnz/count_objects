@@ -8,13 +8,21 @@ import cv2
 import numpy as np
 import collections
 import math
+<<<<<<< HEAD
 import im_proc
+=======
+from count_objects import im_proc
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a
 
 class Contour:
         '''Contour class used to create and store statists about the obejcts found in an image using cv2.findContours function.
         The attributes can be calcuted on instantiation of the contour object or they can be called and populated as the GET function
+<<<<<<< HEAD
         for that attribute is called. This is done by means of an optional boolean parameter initValues. This means each GET function
         first determines if the value has been changed from default value of None before doing any calculation.
+=======
+        for that attribute is called. This is done by means of an optional boolean parameter initValues.
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a
 
         Attributes:
                 img (image):
@@ -53,10 +61,15 @@ class Contour:
                         Two arrays one with the x and one with the y coordinates of every pixel inside the contour.                    
                 allPixelPointColours: (array):
                         Two arrays one with the an array containing the x,y coordinates and the other an array containing the BGR values [Coordinates, Colours]
+<<<<<<< HEAD
                 totalReflectance: (double)
                         Total Reflectance or the colour intensity of the contour (total colour intensity). The sum of pixel colour values in the red green and blue channel averaged over the whole contour.
         '''
         def __init__(self,originalImg,cnt,binaryImg = None,initValues=False):
+=======
+        '''
+        def __init__(self,img,cnt,initValues=False):
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a
                 '''The constructor for a contour object
 
                 Args:
@@ -68,6 +81,7 @@ class Contour:
                     None
 
                 '''
+<<<<<<< HEAD
                 self.originalImg = originalImg
                 self.cnt = cnt
                 self.size = len(cnt)
@@ -79,6 +93,13 @@ class Contour:
                 
                 self.initValuesToNone()
                 if (initValues):
+=======
+                self.img = img
+                self.cnt = cnt
+                self.size = len(cnt)
+                if (initValues):
+                        self.initValuesToNone()
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a
                         self.getArea()
                         self.getCentroid()
                         self.getBoundingBox()
@@ -90,11 +111,19 @@ class Contour:
                         self.getContourLength()
                         self.getCircularity()
                         self.getContourLengthToWidth()
+<<<<<<< HEAD
                         self.getPixelPoints()
                         self.getPixelPointColours()
                         self.getTotalReflectance()
                
                        
+=======
+                        self.getPixelPoints(self.img)
+                        self.getPixelPointColours(self.img)
+                        
+                else:
+                        self.initValuesToNone()
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a
                         
         def initValuesToNone(self):
                 self.area = None
@@ -116,7 +145,10 @@ class Contour:
                 self.contourLengthToWidth = None
                 self.allPixelPoints = None
                 self.allPixelPointColours = None
+<<<<<<< HEAD
                 self.totalReflectance = None
+=======
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a
         
         #get contour area
         def getArea(self):
@@ -305,7 +337,11 @@ class Contour:
                         self.contourLengthToWidth = self.height/self.width
                 return self.contourLengthToWidth
 
+<<<<<<< HEAD
         def getPixelPoints(self):
+=======
+        def getPixelPoints(self, img):
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a
                 '''Returns an array of all the pixel points in the contour
 
                 Args:
@@ -315,28 +351,48 @@ class Contour:
                     An array of all the pixel points in the contour
                 '''
                 if(self.allPixelPoints is None):
+<<<<<<< HEAD
                         drawing = np.zeros(self.binaryImg.shape,np.uint8) #create a zero'd drawing with same dimensions as given image
+=======
+                        drawing = np.zeros(img.shape,np.uint8) #create a zero'd drawing with same dimensions as given image
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a
                         cv2.drawContours(drawing,[self.cnt],0,(255,255,255),-1)              
                         pixelPoints = np.nonzero(drawing)
                         self.allPixelPoints = pixelPoints
 		return self.allPixelPoints	
+<<<<<<< HEAD
 	def getPixelPointColours(self):
                 '''Returns an tuple of cordinates and colour arrays
 
                 Args:
                     img : the original image that is used as reference point for the pixel points and the colours.
+=======
+	def getPixelPointColours(self,colourImg):
+                '''Returns an tuple of cordinates and colour arrays
+
+                Args:
+                    img : the original image that is used as reference point for the pixel points adn the colours. Pass a 1 channel grayscale or else pixel points will be
+                          returned once for each channel.
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a
 
                 Returns:
                     An array of all the pixel points in the contour
                 '''
+<<<<<<< HEAD
                 #destRGB = cv2.cvtColor(colourImg,cv2.COLOR_BGR2RGB) #convert openCV BGR colour to RGB
                 if (self.allPixelPointColours is None):
                         if (self.allPixelPoints is None):
                                 pixelpoints = c.getPixelPoints(self.binaryImg)
+=======
+                if (self.allPixelPointColours is None):
+                        if (self.allPixelPoints is None):
+                                pixelpoints = c.getPixelPoints(colourImg)
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a
                         colourList = list()
                         rows = self.allPixelPoints[0]
                         cols = self.allPixelPoints[1]
                         for x in range(0, len(rows)):
+<<<<<<< HEAD
                                 colourList.append([[rows[x],cols[x]],self.originalImg[rows[x],cols[x]]])
                         self.allPixelPointColours = colourList
                 return  self.allPixelPointColours
@@ -366,3 +422,9 @@ class Contour:
                 return self.totalReflectance
                 
                         
+=======
+                                colourList.append([[rows[x],cols[x]],colourImg[rows[x],cols[x]]])
+                        self.allPixelPointColours = colourList
+                return  self.allPixelPointColours
+                
+>>>>>>> a087337c46e00eb96d5f771d52f7b385cac3161a
