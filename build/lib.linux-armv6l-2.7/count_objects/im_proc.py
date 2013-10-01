@@ -14,7 +14,6 @@ import cv2
 import cv
 import sys
 import numpy as np
-import contour_features as cf
 
 def show_image(windowName,img):
     '''Diplay an image in an openCV named window.
@@ -76,12 +75,11 @@ def threshold_image(img,thresholdValue):
 
     Args:
         img (image): The image to be operated on
-        thresholdValue (int Default= None): A value between 0 and 255 around which the image will be thresholed. Any values bellow the given value will be black while those above will become white in the output
+        thresholdValue: a value between 0 and 255 around which the image will be thresholed. Any values bellow the given value will be black while those above will become white in the output
     Returns:
         A binary image based on the threshold value supplied
     '''
-  
-     
+    
     ret, threshold_image = cv2.threshold(img,thresholdValue,255,cv2.THRESH_BINARY_INV)
     return threshold_image
 
@@ -118,45 +116,4 @@ def findThreshValue(img):
     for y in range(x, 0, -1):
         if hist[y] == 0:
             break
-    return y
-
-def prepareImage(img, threshValue = None):
-    ''' Prepare an image by converting to grey, thresholding and then opening it 
-
-    Args:
-        colourImg (image): the image to be operated on
-
-    Returns:
-        An array containing the prepared image and the original image [prepared image, original image]
-    '''
-    if (threshValue is None):
-        threshValue = findThreshValue(img)
-    threshold_img = threshold_image(img,threshValue)  
-    element = cv2.getStructuringElement(cv2.MORPH_CROSS,(3,3))
-    closed_img = close_image(threshold_img,element,1)
-    return threshold_img
-
-def getContourListFrom(originalImage, threshValue = None, initValues = False):
-    ''' Gets a list of contours from a colour image. Optionally can set teh threshValue, and whether the contour objects
-        have their attributes pre-populated with flag "initValues"
-
-    Args:
-        img (image): the image to be operated on
-        threshValue: (boolean :optional) optional threshold value if built in auto-threshold does not work for given image.
-        initValues: (boolean :optional) Boolean value to specify whether or not to calculate all the contour statistics on instantiation or not.
-
-    Returns:
-        An list of contour objects
-    '''
-    contourList = list()
-    gray_image = cv2.cvtColor(originalImage, cv2.COLOR_BGR2GRAY)
-    prepared_image = prepareImage(gray_image)
-    prepared_image_copy = prepared_image.copy()
-    contours,hierarchy = cv2.findContours(prepared_image_copy,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-
-    seedCount = 1
-    for cnt in contours:
-        if (cv2.contourArea(cnt) > 50):#if the contour is really small ignore it
-            c = cf.Contour(originalImage,cnt,prepared_image,initValues)
-            contourList.append(c)
-    return contourList
+    return y  
