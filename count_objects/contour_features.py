@@ -4,6 +4,7 @@ Contour Features
 ****************
 This module contains the Contour Class used to calculate the statistics of objects found using cv2.findContours()
 '''
+
 import cv2
 import numpy as np
 import collections
@@ -64,6 +65,7 @@ class Contour:
                 totalReflectance: (double)
                         Total Reflectance or the colour intensity of the contour (total colour intensity). The sum of pixel colour values in the red green and blue channel averaged over the whole contour.
         '''
+        
         def __init__(self,originalImg,cnt,ID,binaryImg = None,initValues=False):
                 '''The constructor for a contour object
 
@@ -78,6 +80,7 @@ class Contour:
                     None
 
                 '''
+                
                 self.originalImg = originalImg
                 self.cnt = cnt #the actual contour data returned by cv2.findContours()
                 self.size = len(cnt) #perimiter of the contour
@@ -141,6 +144,7 @@ class Contour:
                 Returns:
                      The area in pixels
                 '''
+                
                 if (self.area is None):
                         self.area = cv2.contourArea(self.cnt)
                 return self.area
@@ -156,6 +160,7 @@ class Contour:
                 Returns:
                       
                 '''
+                
                 if (self.centroid is None):
                         self.moments = cv2.moments(self.cnt)
                         if self.moments['m00'] != 0.0:       
@@ -172,6 +177,7 @@ class Contour:
 		Returns:
 			An array containing the x,y values of the four corners of the bounding box
 		'''
+                
                 if (self.boundingBox_Points is None):
                         bx,by,bw,bh = cv2.boundingRect(self.cnt)
                         self.boundingBox_points = bx,by,bw,bh
@@ -185,6 +191,7 @@ class Contour:
                 Returns:
                    An array containing the x,y values of the four corners of the bounding box
                 '''
+                
                 if (self.minBoundingBox_Points is None):                        
                         rect = cv2.minAreaRect(self.cnt)              
                         points = cv2.cv.BoxPoints(rect)
@@ -200,11 +207,12 @@ class Contour:
                 '''Get the smallest bounding ellipse for the contour
 
                 Args:
-                    None
+                   None
 
                 Returns:
                     An array of the points in the bounding ellipse
                 '''
+                
                 if (self.ellipse is None):
                         self.ellipse = cv2.fitEllipse(self.cnt)
                         (self.ellipose_center,self.ellipse_axes,self.ellipse_orientation) = self.ellipse
@@ -219,6 +227,7 @@ class Contour:
                 Returns:
                     A double representing the length in pixels of the major axis
                 '''
+                
                 if (self.ellipse_MajorAxisLength is None):
                         if (self.ellipse is None):
                                 self.getBoundingEllipse()                
@@ -342,6 +351,7 @@ class Contour:
                 Returns:
                     An array of all the pixel points in the contour
                 '''
+                
                 #destRGB = cv2.cvtColor(colourImg,cv2.COLOR_BGR2RGB) #convert openCV BGR colour to RGB
                 if (self.allPixelPointColours is None):
                         if (self.allPixelPoints is None):
@@ -363,6 +373,7 @@ class Contour:
                 Returns:
                     An array of all the pixel points in the contour
                 '''
+                
                 totalPixelValue = 0 #to keep track of the total of all colour channels added together
                 totalPixelValueCount = 0 #keep track of how many colour channels we have added together
                 if (self.totalReflectance is None):
