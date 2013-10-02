@@ -11,7 +11,6 @@ Created by Seth Reid August 2013.
 '''
 
 import cv2
-import cv
 import sys
 import numpy as np
 import contour_features as cf
@@ -148,15 +147,36 @@ def getContourListFrom(originalImage, threshValue = None, initValues = False):
     Returns:
         An list of contour objects
     '''
-    contourList = list()
+
     gray_image = cv2.cvtColor(originalImage, cv2.COLOR_BGR2GRAY)
     prepared_image = prepareImage(gray_image)
     prepared_image_copy = prepared_image.copy()
     contours,hierarchy = cv2.findContours(prepared_image_copy,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-
-    seedCount = 1
+    ID = 1
+    contourList = dict()
     for cnt in contours:
         if (cv2.contourArea(cnt) > 50):#if the contour is really small ignore it
-            c = cf.Contour(originalImage,cnt,prepared_image,initValues)
-            contourList.append(c)
+            c = cf.Contour(originalImage,cnt,ID,prepared_image,initValues)
+            contourList.update({ID:c})
+            ID += 1
     return contourList
+
+def drawContoursFromList(contourList, imgShape, numberSeeds = True):
+    ''' Creates a blank numpy image array to draw a list of contour object on and return the image object.
+
+    Args:
+        contourList (dict): the list of contours to draw
+            
+    Returns:
+        A cv2-image-object (numpy-array) with the contours drawn
+    '''
+    drawing = np.zeros(imgShape,np.uint8)#Image to draw the contours
+    for key, cnt in contourList.iteritems():
+        if (cnt.area > 50):
+            #color = np.random.randint(0,255,(3)).tolist()  # Select a random color
+            cv2.drawContours(drawing,[cnt.cnt],0,(255,255,255),-1)
+            textX = int(cnt.centroid[0])
+            textY = int(cnt.centroid[1])
+            cv2.putText(drawing, str(key), (textX,textY),cv2.cv.CV_FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
+
+    return drawing

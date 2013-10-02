@@ -14,7 +14,11 @@ class Contour:
         '''Contour class used to create and store statists about the obejcts found in an image using cv2.findContours function.
         The attributes can be calcuted on instantiation of the contour object or they can be called and populated as the GET function
         for that attribute is called. This is done by means of an optional boolean parameter initValues. This means each GET function
-        first determines if the value has been changed from default value of None before doing any calculation.
+        first determines if the value has been changed from default value of None before doing any calculation. These values should
+        be treated as read only.
+
+        Note: Due to this initValues flag each GET function first checks if the attributes requested, or any pre-requisite attributes,
+        are set and either returns the attribute or caluculates and sets the attribute.
 
         Attributes:
                 img (image):
@@ -23,6 +27,10 @@ class Contour:
                         The detected contour points from the original image
                 size (int):
                         The number of different points in the contour boundry that defines the contour itself
+                originalImg (cv2-image-object[numpy-aray]):
+                        The original image the contour was found in
+                binaryImg (cv2-image-object[numpy-aray]):
+                        The prepared binarized version of the image used for the actual contour detection
                 area (double):
                         Total area of the contour in pixels
                 centroid (array):
@@ -56,12 +64,14 @@ class Contour:
                 totalReflectance: (double)
                         Total Reflectance or the colour intensity of the contour (total colour intensity). The sum of pixel colour values in the red green and blue channel averaged over the whole contour.
         '''
-        def __init__(self,originalImg,cnt,binaryImg = None,initValues=False):
+        def __init__(self,originalImg,cnt,ID,binaryImg = None,initValues=False):
                 '''The constructor for a contour object
 
                 Args:
                     img (image): The image that the contour moments were detected from
                     cnt (moment): An openCV contour moment structure that is returned using cv2.findContours()
+                    ID (integer): A unique identifier for this contour within the contect of the image in which it is found
+                    binaryImg (cv2-image-object[numpy-aray])
                     initValues (boolean): True == calculate the attributes upon initialisation. False == set all non supplied attribues to None as default.
 
                 Returns:
@@ -69,16 +79,19 @@ class Contour:
 
                 '''
                 self.originalImg = originalImg
-                self.cnt = cnt
-                self.size = len(cnt)
+                self.cnt = cnt #the actual contour data returned by cv2.findContours()
+                self.size = len(cnt) #perimiter of the contour
+                self.ID = ID #unique identifier within the image the contour is found
+                
                 if (binaryImg is None):
                         self.binaryImg = im_proc.prepareImage(self.originalImg)
                         im_proc.show_image (self.binaryImg)
                 else:
                         self.binaryImg = binaryImg
                 
+                
                 self.initValuesToNone()
-                if (initValues):
+                if (initValues): #if initValues flag is true calculate all attributes
                         self.getArea()
                         self.getCentroid()
                         self.getBoundingBox()
@@ -96,7 +109,7 @@ class Contour:
                
                        
                         
-        def initValuesToNone(self):
+        def initValuesToNone(self): #function to set up the object with empy attributes in order to be able to check they have been set
                 self.area = None
                 self.centroid = None
                 self.circularity = None
@@ -350,19 +363,19 @@ class Contour:
                 Returns:
                     An array of all the pixel points in the contour
                 '''
-                totalReflectance = 0 #to keep track of the total of all colour channels added together
-                totalColourValueCount = 0 #keep track of how many colour channels we have added together
+                totalPixelValue = 0 #to keep track of the total of all colour channels added together
+                totalPixelValueCount = 0 #keep track of how many colour channels we have added together
                 if (self.totalReflectance is None):
                         if (self.allPixelPointColours is None):
                                 self.getPixelPointColours(self.binaryImage)
         
                         for colours in self.allPixelPointColours:
                                 for channel in colours[1]:
-                                        totalColourValueCount += 1
-                                        totalReflectance += channel
+                                        totalPixelValueCount += 1
+                                        totalPixelValue += channel
                                         
                         #the total reflectance devided by number of channels and then by three to get for each pixel (three channels per pixel)
-                        self.totalReflectance = totalReflectance/(totalColourValueCount/3)
+                        self.totalReflectance = totalPixelValue/(totalPixelValueCount/3)
                 return self.totalReflectance
                 
                         
