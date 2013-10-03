@@ -171,12 +171,12 @@ def drawContoursFromList(contourList, imgShape, numberSeeds = True):
         A cv2-image-object (numpy-array) with the contours drawn
     '''
     drawing = np.zeros(imgShape,np.uint8)#Image to draw the contours
-    for key, cnt in contourList.iteritems():
-        if (cnt.area > 50):
+    for key, cnt in contourList.iteritems(): #for each key and value pair in the contourList
+        if (cnt.getArea > 50):
             #color = np.random.randint(0,255,(3)).tolist()  # Select a random color
             cv2.drawContours(drawing,[cnt.cnt],0,(255,255,255),-1)
-            textX = int(cnt.centroid[0])
-            textY = int(cnt.centroid[1])
+            textX = int(cnt.getCentroid()[0])
+            textY = int(cnt.getCentroid()[1])
             cv2.putText(drawing, str(key), (textX,textY),cv2.cv.CV_FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
 
     return drawing
