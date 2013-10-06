@@ -8,7 +8,7 @@ import cv2
 import numpy as np
 import collections
 import math
-from count_objects import im_proc
+import im_proc
 
 class Contour:
         '''Contour class used to create and store statists about the obejcts found in an image using cv2.findContours function.
@@ -53,8 +53,10 @@ class Contour:
                         Two arrays one with the x and one with the y coordinates of every pixel inside the contour.                    
                 allPixelPointColours: (array):
                         Two arrays one with the an array containing the x,y coordinates and the other an array containing the BGR values [Coordinates, Colours]
+                totalReflectance: (double)
+                        Total Reflectance or the colour intensity of the contour (total colour intensity). The sum of pixel colour values in the red green and blue channel averaged over the whole contour.
         '''
-        def __init__(self,img,cnt,initValues=False):
+        def __init__(self,originalImg,cnt,binaryImg = None,initValues=False):
                 '''The constructor for a contour object
 
                 Args:
@@ -66,11 +68,18 @@ class Contour:
                     None
 
                 '''
-                self.img = img
+                self.originalImg = originalImg
                 self.cnt = cnt
                 self.size = len(cnt)
+                if (binaryImg is None):
+                        self.binaryImg = im_proc.prepareImage(self.originalImg)
+                        im_proc.show_image (self.binaryImg)
+                else:
+                        self.binaryImg = binaryImg
+                
+
+                self.initValuesToNone()
                 if (initValues):
-                        self.initValuesToNone()
                         self.getArea()
                         self.getCentroid()
                         self.getBoundingBox()
@@ -82,11 +91,12 @@ class Contour:
                         self.getContourLength()
                         self.getCircularity()
                         self.getContourLengthToWidth()
-                        self.getPixelPoints(self.img)
-                        self.getPixelPointColours(self.img)
-                        
-                else:
-                        self.initValuesToNone()
+                        self.getPixelPoints()
+                        self.getPixelPointColours()
+                        self.getTotalReflectance()
+                        self.getPixelPoints()
+                        self.getPixelPointColours()
+                       
                         
         def initValuesToNone(self):
                 self.area = None
@@ -108,6 +118,7 @@ class Contour:
                 self.contourLengthToWidth = None
                 self.allPixelPoints = None
                 self.allPixelPointColours = None
+                self.totalReflectance = None
         
         #get contour area
         def getArea(self):
@@ -296,7 +307,7 @@ class Contour:
                         self.contourLengthToWidth = self.height/self.width
                 return self.contourLengthToWidth
 
-        def getPixelPoints(self, img):
+        def getPixelPoints(self):
                 '''Returns an array of all the pixel points in the contour
 
                 Args:
@@ -306,28 +317,55 @@ class Contour:
                     An array of all the pixel points in the contour
                 '''
                 if(self.allPixelPoints is None):
-                        drawing = np.zeros(img.shape,np.uint8) #create a zero'd drawing with same dimensions as given image
+                        drawing = np.zeros(self.binaryImg.shape,np.uint8) #create a zero'd drawing with same dimensions as given image
                         cv2.drawContours(drawing,[self.cnt],0,(255,255,255),-1)              
                         pixelPoints = np.nonzero(drawing)
                         self.allPixelPoints = pixelPoints
-		return self.allPixelPoints	
-	def getPixelPointColours(self,colourImg):
+		return self.allPixelPoints
+	
+	def getPixelPointColours(self):
                 '''Returns an tuple of cordinates and colour arrays
 
                 Args:
-                    img : the original image that is used as reference point for the pixel points adn the colours. Pass a 1 channel grayscale or else pixel points will be
-                          returned once for each channel.
+                    img : the original image that is used as reference point for the pixel points and the colours.
 
                 Returns:
                     An array of all the pixel points in the contour
                 '''
+                #destRGB = cv2.cvtColor(colourImg,cv2.COLOR_BGR2RGB) #convert openCV BGR colour to RGB
                 if (self.allPixelPointColours is None):
                         if (self.allPixelPoints is None):
-                                pixelpoints = c.getPixelPoints(colourImg)
+                                pixelpoints = c.getPixelPoints(self.binaryImg)
                         colourList = list()
                         rows = self.allPixelPoints[0]
                         cols = self.allPixelPoints[1]
                         for x in range(0, len(rows)):
-                                colourList.append([[rows[x],cols[x]],colourImg[rows[x],cols[x]]])
+                                colourList.append([[rows[x],cols[x]],self.originalImg[rows[x],cols[x]]])
                         self.allPixelPointColours = colourList
                 return  self.allPixelPointColours
+
+        def getTotalReflectance(self):
+                '''Returns an tuple of cordinates and colour arrays
+
+                Args:
+                    None
+
+                Returns:
+                    An array of all the pixel points in the contour
+                '''
+                totalReflectance = 0 #to keep track of the total of all colour channels added together
+                totalColourValueCount = 0 #keep track of how many colour channels we have added together
+                if (self.totalReflectance is None):
+                        if (self.allPixelPointColours is None):
+                                self.getPixelPointColours(self.binaryImage)
+        
+                        for colours in self.allPixelPointColours:
+                                for channel in colours[1]:
+                                        totalColourValueCount += 1
+                                        totalReflectance += channel
+                                        
+                        #the total reflectance devided by number of channels and then by three to get for each pixel (three channels per pixel)
+                        self.totalReflectance = totalReflectance/(totalColourValueCount/3)
+                return self.totalReflectance
+                
+                        

@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Object Count Tutorial &mdash; Count Objects 0.0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Count Objects 0.0.2 documentation" href="index.html" />
+    <link rel="prev" title="Introduction to Count Objects Package" href="introduction.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction to Count Objects Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Count Objects 0.0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="object-count-tutorial">
+<h1>Object Count Tutorial<a class="headerlink" href="#object-count-tutorial" title="Permalink to this headline">¶</a></h1>
+<p>This is a short tutorial with code examples to show how to make a very simple application
+to count the seeds in an image using this toolkit.</p>
+<p>The process of counting objects in an image can be broken down into to sub-processes. The
+first is preparing the image and the second is identifying the objects in the prepared image.
+This toolkit as substantially simplified this process by making these two processes into one
+simple function which takes a single image parameter and two optional parameters, a threshold value
+and the initValues flag.</p>
+<p>Note: This is not to say the image preparation functions are not available to be used
+separately from these two functions but this would only be required if certain problems exist
+in the image that make further image processing required. In an image that has high a contrast
+in light intensity between the foreground (objects of interest) and the background the function
+im_proc.prepareImage() will be satisfactory in creating a binary image. This function is used
+in the im_proc.getContourListFrom() function which takes care of the entire process.</p>
+<p>To create an application using this toolkit one has to simply get an image objects using openCV
+cv2.imread() function then pass that image to the function im_proc.getContourListFrom() (using the initValue
+flag if you wish all the statistics to be calculated on instantiation). This will return a dictionary
+of contours with the key being the contours ID attribute. The following is a simple command line application
+that takes an image path as an argument and then creates a contour list from it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">count_objects</span> <span class="kn">import</span> <span class="n">im_proc</span>
+<span class="kn">from</span> <span class="nn">count_objects</span> <span class="kn">import</span> <span class="n">contour_features</span> <span class="k">as</span> <span class="n">cf</span>
+
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span><span class="o">!=</span><span class="mi">2</span><span class="p">:</span>                  <span class="c">## Check for error in usage syntax</span>
+        <span class="k">print</span> <span class="s">&quot;Usage : python countSeeds.py &lt;image_file&gt;&quot;</span>
+
+<span class="k">else</span><span class="p">:</span><span class="c">#continue with the program</span>
+        <span class="c">## Read image file in colour</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">cv2</span><span class="o">.</span><span class="n">CV_LOAD_IMAGE_COLOR</span><span class="p">)</span>
+        <span class="n">cList</span> <span class="o">=</span> <span class="n">im_proc</span><span class="o">.</span><span class="n">getContourListFrom</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">initValues</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This list can then be passed to im_proc.drawContoursFromList() function and this will draw the contours onto
+a copy of the original image in a red outline. This function has a flag &#8216;numberContours&#8217; that defaults to true
+and controls if the function numbers the contours in the image. This can then be shown to the end user:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">output</span> <span class="o">=</span> <span class="n">im_proc</span><span class="o">.</span><span class="n">drawContoursFromList</span><span class="p">(</span><span class="n">cList</span><span class="p">)</span>
+
+<span class="c">### show original</span>
+<span class="n">im_proc</span><span class="o">.</span><span class="n">show_image</span><span class="p">(</span><span class="s">&#39;input&#39;</span><span class="p">,</span><span class="n">img</span><span class="p">)</span>
+<span class="n">cv2</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">MoveWindow</span><span class="p">(</span><span class="s">&#39;input&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c">#Show final image</span>
+<span class="n">im_proc</span><span class="o">.</span><span class="n">show_image</span><span class="p">(</span><span class="s">&#39;output&#39;</span><span class="p">,</span><span class="n">output</span><span class="p">)</span>
+<span class="n">cv2</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">MoveWindow</span><span class="p">(</span><span class="s">&#39;output&#39;</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c">## Wait for keystroke to allow user to see image displays</span>
+<span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The list passed back by to im_proc.drawContoursFromList() has contour objects in it. These have various get functions
+that will give you statistics about the contour. These are listed in the contour class documentation.</p>
+<p>The full code can be found bellow:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">count_objects</span> <span class="kn">import</span> <span class="n">im_proc</span>
+<span class="kn">from</span> <span class="nn">count_objects</span> <span class="kn">import</span> <span class="n">contour_features</span> <span class="k">as</span> <span class="n">cf</span>
+
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span><span class="o">!=</span><span class="mi">2</span><span class="p">:</span>                  <span class="c">## Check for error in usage syntax</span>
+        <span class="k">print</span> <span class="s">&quot;Usage : python countSeeds.py &lt;image_file&gt;&quot;</span>
+
+<span class="k">else</span><span class="p">:</span><span class="c">#continue with the program</span>
+        <span class="c">## Read image file in colour</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">cv2</span><span class="o">.</span><span class="n">CV_LOAD_IMAGE_COLOR</span><span class="p">)</span>
+        <span class="n">cList</span> <span class="o">=</span> <span class="n">im_proc</span><span class="o">.</span><span class="n">getContourListFrom</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">initValues</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">im_proc</span><span class="o">.</span><span class="n">drawContoursFromList</span><span class="p">(</span><span class="n">cList</span><span class="p">)</span>
+
+        <span class="c">### show original</span>
+        <span class="n">im_proc</span><span class="o">.</span><span class="n">show_image</span><span class="p">(</span><span class="s">&#39;input&#39;</span><span class="p">,</span><span class="n">img</span><span class="p">)</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">MoveWindow</span><span class="p">(</span><span class="s">&#39;input&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c">#Show final image</span>
+        <span class="n">im_proc</span><span class="o">.</span><span class="n">show_image</span><span class="p">(</span><span class="s">&#39;output&#39;</span><span class="p">,</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">MoveWindow</span><span class="p">(</span><span class="s">&#39;output&#39;</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c">## Wait for keystroke to allow user to see image displays</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="introduction.html"
+                        title="previous chapter">Introduction to Count Objects Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tutorial.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction to Count Objects Package"
+             >previous</a> |</li>
+        <li><a href="index.html">Count Objects 0.0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Seth Reid.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b3.
+    </div>
+  </body>
+</html>

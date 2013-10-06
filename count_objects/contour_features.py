@@ -12,75 +12,102 @@ import im_proc
 
 class Contour:
         '''Contour class used to create and store statists about the obejcts found in an image using cv2.findContours function.
-        The attributes can be calcuted on instantiation of the contour object or they can be called and populated as the GET function
-        for that attribute is called. This is done by means of an optional boolean parameter initValues. This means each GET function
+        The attributes can be calcuted on instantiation of the contour object or they can be called and populated as the 'get' function
+        for that attribute is called. This is done by means of an optional boolean parameter initValues. This means each 'get' function
         first determines if the value has been changed from default value of None before doing any calculation. These values should
-        be treated as read only.
-
-        Note: Due to this initValues flag each GET function first checks if the attributes requested, or any pre-requisite attributes,
-        are set and either returns the attribute or caluculates and sets the attribute.
+        be treated as read only and accessed via their respective 'get' function.
 
         Attributes:
                 img (image):
                         The image that the contour was found in
+
                 cnt (OpenCV contour-return-data):
                         The detected contour points from the original image
+
                 size (int):
                         The number of different points in the contour boundry that defines the contour itself
+
                 originalImg (cv2-image-object[numpy-aray]):
                         The original image the contour was found in
+
                 binaryImg (cv2-image-object[numpy-aray]):
                         The prepared binarized version of the image used for the actual contour detection
+
                 area (double):
                         Total area of the contour in pixels
+
                 centroid (array):
                         X and y value of the center of the contour. Calculated as the average position of all of the pixels contained inside the contour
+
 		boundingBox (array):
                         The four x,y values of the corners of the bounding box around the contour that has sides perpendicular to the image x,y axis.
+
                 minBoundingBox_Points (array):
                         The four x,y values of the corners of the minimal bounding box around the contour.
+
                 boundingEllipse (array):
                         The points that make up the best fitting bounding ecplise of the contour.
+
                 majorAxis (double):
                         The length of the major axis of the bounding ellipse in pixels
+
                 minorAxis (double):
                         The lenth of the minor axis of the bounding ellipse in pixels
+
                 height: (double):
                         The length (longest side) of the bounding box which can be considered a proxy for length
+
                 width: (double):
                         The width (longest side) of the bounding box which can be considered a proxy for width
+
                 ellipse (array):
                         An array of hte points in the smallest bounding ellipse
+
                 ellipse_MinorAxisLength: (double):
                         The length of the minor axis of the bounding ellipse in pixels            
+
                 ellipse_MajorAxisLength: (double):
                         The length of the major axis of the bounding ellipse in pixels
+
                 contourLengthToWidth: (double):
                         The ratio of the contours length to width (calculated from the minBoundingBoxDims)
+
                 convexHull (OpenCV contour-return-data):
                         The convex hull of the contour
+
                 convexHullArea (float):
                         The area of the convex hull of the contour (in px)
+
                 convexAreaDivCntArea (float):
                         The area of the convex hull divided by the area of the contour itself (in px)
+
                 allPixelPoints: (array):
                         Two arrays one with the x and one with the y coordinates of every pixel inside the contour.
+
                 totalPixelsContained(int):
                         The total number of pixels contained within the contour
+
                 allPixelPointColours: (array):
                         Two arrays one with the an array containing the x,y coordinates and the other an array containing the BGR values [Coordinates, Colours]
+
                 totalColourIntensity (int):
                         The total count of all colour channels across all pixels in the contour
+
                 totalReflectance: (double)
                         Total Reflectance or the colour intensity of the contour (total colour intensity). The sum of pixel colour values in the red green and blue channel averaged over the whole contour.
+
                 totalBlueValues (int):
                         The total count of blue values across all pixels in the contour
+                        
                 totalGreenValues(int):
                         The total count of green values across all pixels in the contour
+                        
                 totalRedValues(int):
-                        The total count of red values across all pixels in the contour            
+                        The total count of red values across all pixels in the contour
+                        
                 redToGreenRatio(float):
                         The ratio of red to blue channel values accross the whole contour
+                        
                 allColourDensities (Array of floats):
                         Three values that represent the total value of each colour channel devided by the total intensity. In openCV native channel order of BGR. IE redTotal/totalColourIntensity.
         '''
@@ -121,7 +148,7 @@ class Contour:
                         self.getMinorAxis()
                         self.getMinBoundingBoxDimensions()
                         self.getPerimeter()
-                        self.getCircularity()
+                        self.getHeywoodCircularity()
                         self.getContourLengthToWidth()
                         self.getConvexHull()
                         self.getConvexHullArea()
@@ -177,10 +204,11 @@ class Contour:
                 '''Finds the area of the contour in pixels
 
                 Args:
-                     none
-
+                    none
+                
                 Returns:
-                     The area in pixels
+                    The area in pixels
+                
                 '''
                 if (self.area is None):
                         self.area = cv2.contourArea(self.cnt)
@@ -189,10 +217,10 @@ class Contour:
                 '''Finds the average width of the contour (area/length)
 
                 Args:
-                     none
-
+                    none
+                
                 Returns:
-                     The area in pixels
+                    The area in pixels
                 '''
                 if (self.averageWidth is None):
                         self.averageWidth = float(self.getArea())/float(self.getLength())
@@ -200,14 +228,16 @@ class Contour:
 
         #get average position (centroid) of the contour relative to top left 0px,0px
         def getCentroid(self):
-                '''
+                '''The average central position of the contour expressed as an x,y coordinate
 
                 Args:
-                         
+                    none    
 
                 Returns:
-                      
+                    An array containing the X and Y coordinates of the centroid
+                    
                 '''
+                
                 if (self.centroid is None):
                         self.moments = cv2.moments(self.cnt)
                         if self.moments['m00'] != 0.0:       
@@ -219,11 +249,15 @@ class Contour:
                 return self.centroid 
 	def getBoundingBox(self):
                 '''Get a bounding box that has sides that are perperdicular to the image x and y axis.
+
 		Args:
-                	none
+                    none
+                    
 		Returns:
-			An array containing the x,y values of the four corners of the bounding box
+		    An array containing the x,y values of the four corners of the bounding box
+		
 		'''
+                
                 if (self.boundingBox_Points is None):
                         bx,by,bw,bh = cv2.boundingRect(self.cnt)
                         self.boundingBox_points = bx,by,bw,bh
@@ -231,12 +265,15 @@ class Contour:
 
         def getMinBoundingBox(self):
                 '''Get the minimal bounding box for the countour
+
                 Args:
-                   None
-                   
+                    None
+                
                 Returns:
-                   An array containing the x,y values of the four corners of the bounding box
+                    An array containing the x,y values of the four corners of the bounding box
+                
                 '''
+                
                 if (self.minBoundingBox_Points is None):                        
                         rect = cv2.minAreaRect(self.cnt)              
                         points = cv2.cv.BoxPoints(rect)
@@ -256,6 +293,7 @@ class Contour:
 
                 Returns:
                     An array of the points in the bounding ellipse
+                    
                 '''
                 if (self.ellipse is None):
                         self.ellipse = cv2.fitEllipse(self.cnt)
@@ -270,6 +308,7 @@ class Contour:
                 
                 Returns:
                     A double representing the length in pixels of the major axis
+                
                 '''
                 if (self.ellipse_MajorAxisLength is None):
                         self.getBoundingEllipse()                
@@ -284,6 +323,7 @@ class Contour:
                 
                 Returns:
                     A double representing the length in pixels of the minor axis
+                
                 '''
                 if (self.ellipse_MinorAxisLength is None):
                         self.getBoundingEllipse()
@@ -294,10 +334,11 @@ class Contour:
                 '''Find the length and width of the bounding box of the contour. This can be used as  proxy for the length and width of the contour itself
 
                 Args:
-                    None 
+                     None 
 
                 Returns:
-                    An array containing the width and length in that order [width,length]
+                     An array containing the width and length in that order [width,length]
+                     
                 '''
                 if (self.width is None or self.length is None):
                         self.getMinBoundingBox()
@@ -327,6 +368,7 @@ class Contour:
 
                 Returns:
                     Integer
+                    
                 '''
                 if(self.length is None):
                         self.getMinBoundingBoxDimensions()
@@ -340,6 +382,7 @@ class Contour:
 
                 Returns:
                     Integer
+                    
                 '''
                 if(self.width is None):
                         self.getMinBoundingBoxDimensions()
@@ -350,15 +393,16 @@ class Contour:
 
                 Args:
                     None
-
+                    
                 Returns:
                     The length of the perimeter of the contour in pixel
+                
                 '''
                 if (self.perimeter is None):
                         self.contourLength = cv2.arcLength(self.cnt,True)
                 return self.contourLength
         
-        def getCircularity(self):
+        def getHeywoodCircularity(self):
                 '''Calculate the circularity of the the contour using the Haywood Circularity Factor formula. The function returns the inverse of the result of the Haywoord formula
 
                 Args:
@@ -366,6 +410,7 @@ class Contour:
 
                 Returns:
                     A double that represents the circularity of the contour with a value between 0 and 1 where a value of 1 represents a perfect circle.
+
                 '''
                
                 if(self.circularity is None):
@@ -378,7 +423,7 @@ class Contour:
 
                 Args:
                     None
-
+                
                 Returns:
                     The ratio of length to width as a double
                 '''
@@ -392,7 +437,7 @@ class Contour:
 
                 Args:
                     None
-
+                
                 Returns:
                     An array of all the pixel points in the contour
                 '''
@@ -404,9 +449,10 @@ class Contour:
 
                 Args:
                     None
-
+                
                 Returns:
                     Float
+                    
                 '''
                 if(self.convexHullArea is None):
                         self.convexHullArea = float(cv2.contourArea(self.getConvexHull()))
@@ -416,9 +462,10 @@ class Contour:
 
                 Args:
                     None
-
+                
                 Returns:
                     Float
+                    
                 '''
                 if (self.convexAreaDivCntArea is None):
                         self.convexAreaDivCntArea = float(self.getConvexHullArea())/float(self.getArea())
@@ -427,10 +474,11 @@ class Contour:
                 '''Returns an array of all the pixel points in the contour
 
                 Args:
-                    img : the original image that is used as reference point for the pixel points.
-
+                    None
+                    
                 Returns:
                     An array of all the pixel points in the contour
+                    
                 '''
                 if(self.allPixelPoints is None):
                         drawing = np.zeros(self.binaryImg.shape,np.uint8) #create a zero'd drawing with same dimensions as given image
@@ -442,10 +490,11 @@ class Contour:
                 '''Returns total number of pixel points in the contour
 
                 Args:
-                    img : the original image that is used as reference point for the pixel points.
-
+                    None
+                    
                 Returns:
                     An array of all the pixel points in the contour
+                
                 '''
                 if(self.totalPixelsContained is None):
                         self.getPixelPoints()     
@@ -462,10 +511,11 @@ class Contour:
                 '''Returns an tuple of cordinates and colour arrays
 
                 Args:
-                    img : the original image that is used as reference point for the pixel points and the colours.
-
+                    None
+                    
                 Returns:
-                    An array of all the pixel points in the contour
+                     An array of all the pixel points in the contour
+                     
                 '''
                 
                 if (self.allPixelPointColours is None):
@@ -485,10 +535,11 @@ class Contour:
                 '''Returns the total of all three colour channels across all pixel contained in the contour
 
                 Args:
-                    None
-
+                     None
+                
                 Returns:
-                    Integer
+                     Integer
+                
                 '''
                 totalPixelValue = 0 #to keep track of the total of all colour channels added together
                 if (self.totalColourIntensity is None):
@@ -504,9 +555,10 @@ class Contour:
 
                 Args:
                     None
-
+                
                 Returns:
                     Float
+                
                 '''
                 
                 #the total intensity devided by number of contained pixels
@@ -519,9 +571,10 @@ class Contour:
 
                 Args:
                     None
-
+                
                 Returns:
                     Integer
+                
                 '''
                 if (self.totalBlueValues is None):
                         totalCount = 0
@@ -540,9 +593,10 @@ class Contour:
 
                 Args:
                     None
-
+                
                 Returns:
                     Integer
+                    
                 '''
                 if (self.totalGreenValues is None):
                         totalCount = 0
@@ -558,10 +612,11 @@ class Contour:
                 '''Returns the total of all red channels in each pixel point accross the whole contour
 
                 Args:
-                    None
-
+                     None
+                     
                 Returns:
-                    Integer
+                     Integer
+                     
                 '''
                 if (self.totalRedValues is None):
                         totalCount = 0
@@ -576,11 +631,8 @@ class Contour:
         def getRedToGreenRatio(self):
                 '''Returns the ratio of red to green values across the whole contour
 
-                Args:
-                    None
-
-                Returns:
-                    Float
+                Args: None
+                Returns: Float
                 '''
                 if (self.redToGreenRatio is None):
                         ratio = float()
@@ -593,9 +645,9 @@ class Contour:
 
                 Args:
                     None
+                    
+                Returns: Array of the colour densities in the openCV native order of BGR (Blue, Green, Red)
 
-                Returns:
-                    Array of the colour densities in the openCV native order of BGR (Blue, Green, Red)
                 '''
                 if(self.allColourDensities is None):
                         

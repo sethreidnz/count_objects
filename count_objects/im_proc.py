@@ -24,6 +24,7 @@ def show_image(windowName,img):
 
     Returns:
         none
+    
     '''
     if (img == None):                      ## Check for invalid input
         print "Could not open or find the image"
@@ -43,6 +44,7 @@ def close_image(img,element,iterations):
 
     Returns:
         the closed image
+    
     '''
     if (img == None or element == None):## Check for invalid input
         print "Could not open or find the image"
@@ -78,6 +80,7 @@ def threshold_image(img,thresholdValue):
         thresholdValue (int Default= None): A value between 0 and 255 around which the image will be thresholed. Any values bellow the given value will be black while those above will become white in the output
     Returns:
         A binary image based on the threshold value supplied
+    
     '''
   
      
@@ -92,6 +95,7 @@ def singleChannelHist(img):
 
     Returns:
         a numpy array with the histogram data contained
+    
     '''
     bins = np.arange(256).reshape(256,1)
     color = [(255,255,255)]
@@ -109,6 +113,7 @@ def findThreshValue(img):
 
     Returns:
         An integer threshold value
+    
     '''
     hist = singleChannelHist(img)
     for x in range(hist.size -1 , 0, -1):
@@ -127,6 +132,7 @@ def prepareImage(img, threshValue = None):
 
     Returns:
         An array containing the prepared image and the original image [prepared image, original image]
+    
     '''
     if (threshValue is None):
         threshValue = findThreshValue(img)
@@ -146,6 +152,7 @@ def getContourListFrom(originalImage, threshValue = None, initValues = False):
 
     Returns:
         An list of contour objects
+        
     '''
 
     gray_image = cv2.cvtColor(originalImage, cv2.COLOR_BGR2GRAY)
@@ -161,22 +168,25 @@ def getContourListFrom(originalImage, threshValue = None, initValues = False):
             ID += 1
     return contourList
 
-def drawContoursFromList(contourList, imgShape, numberSeeds = True):
+def drawContoursFromList(contourList, numberContours = True):
     ''' Creates a blank numpy image array to draw a list of contour object on and return the image object.
 
     Args:
         contourList (dict): the list of contours to draw
+        numberContours (boolean): flag on whether or not to number the contours on the output image
             
     Returns:
         A cv2-image-object (numpy-array) with the contours drawn
+
     '''
-    drawing = np.zeros(imgShape,np.uint8)#Image to draw the contours
+    #get the original image from the first contour in the list
+    img = contourList[1].originalImg.copy()
+    
     for key, cnt in contourList.iteritems(): #for each key and value pair in the contourList
         if (cnt.getArea > 50):
-            #color = np.random.randint(0,255,(3)).tolist()  # Select a random color
-            cv2.drawContours(drawing,[cnt.cnt],0,(255,255,255),-1)
+            cv2.drawContours(img,[cnt.cnt],0,(255,255,255),0)
             textX = int(cnt.getCentroid()[0])
             textY = int(cnt.getCentroid()[1])
-            cv2.putText(drawing, str(key), (textX,textY),cv2.cv.CV_FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
+            cv2.putText(img, str(key), (textX,textY),cv2.cv.CV_FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
 
-    return drawing
+    return img
