@@ -60,8 +60,5 @@ python setup.py install
 
 ## Developer ##
 
-Seth Reid
-Oct 2013
-Lincoln University
-New Zealand
+Seth Reid, Oct 2013 ,Lincoln University, New Zealand
 
