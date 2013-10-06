@@ -14,7 +14,7 @@ and python (cv2 bindings).
 The package is depended on python numPY and openCV version 2.3 or higher with python cv2
 bindings.
 
-## Such statistics include: ##
+# Statistics available on contours found #
 
 * area
 * centroid
@@ -29,7 +29,7 @@ bindings.
 * ellipse_MinorAxisLength          
 * ellipse_MajorAxisLength
 * contourLengthToWidth
-* convexHull (OpenCV contour-return-data)
+* convexHull
 * convexHullArea
 * convexAreaDivCntArea
 * allPixelPoints
@@ -50,18 +50,15 @@ on GitHub and all his code can be found here:
 
 He is responsible for the bulk of this work and many thanks to him.
 
-============
-Install
-============
+
+## Install ##
 
 Ensure you have python (with numPY included) and openCV (with cv2 Bindings) installed on your system.
 
 Clone repositry, cd to directory and run:
 python setup.py install
 
-============
-Developer
-============
+## Developer ##
 
 Seth Reid
 Oct 2013
