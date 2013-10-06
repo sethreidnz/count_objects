@@ -1,1 +1,4 @@
 v 0.0.1, 22/08/2013 --- Initial package build
+v 0.0.2, 07/10/2013 --- Incapsulated much of contour counting and image processing code,
+			Created new colour analysis methods for contour classs
+			Fixed docs and updated various comments/docstrings
