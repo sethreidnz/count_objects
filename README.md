@@ -14,7 +14,7 @@ and python (cv2 bindings).
 The package is depended on python numPY and openCV version 2.3 or higher with python cv2
 bindings.
 
-*bold* Statistics available on contours found *bold* 
+** Statistics available on contours found ** 
 
 * area
 * centroid
