@@ -62,6 +62,10 @@ Ensure you have python (with numPY included) and openCV (with cv2 Bindings) inst
 Clone repositry, cd to directory and run:
 python setup.py install
 
+## Documentation ##
+
+/docs/build/html/index.html
+
 ## Developer ##
 
 Seth Reid, Oct 2013, Lincoln University, New Zealand
