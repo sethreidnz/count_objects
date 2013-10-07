@@ -2,7 +2,7 @@
 Count Objects
 =============
 
-Warning: This is very much in a development stage V: 0.0.1
+Warning: This is very much in a development stage V: 0.0.2
 
 This is a framework that can be used to design futher applications with the purpose
 of counting objects of interest in a high contrast background to foreground context.
