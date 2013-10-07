@@ -11,6 +11,10 @@ functions in this tool box should be able to acurately count and measure statist
 of the objects. It is suggested to use an LED backlit lightbox.The package uses OpenCV 
 and python (cv2 bindings).
 
+For an prototype using this package please see my other repositry:
+
+https://github.com/justsayno/count_seeds_webapp
+
 The package is depended on python numPY and openCV version 2.3 or higher with python cv2
 bindings.
 
